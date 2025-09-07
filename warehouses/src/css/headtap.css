@@ -1,0 +1,8 @@
+/* 基础重置 - 消除默认边距和滚动条 */
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden; /* 禁用全局滚动条 */
+}
