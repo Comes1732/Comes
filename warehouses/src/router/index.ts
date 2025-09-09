@@ -4,15 +4,15 @@ import LoginView from '@/views/LoginViews.vue'
 
 const routes = [
   {
-    path: '/login',
+    path: '/',
     name: 'Login',
     component: LoginView,
     meta: { requiresAuth: false }  // （未登录用户可访问）
-  },
-  {
-    path: '/',
-    redirect: '/dashboard'
   }
+  // ,
+  // {
+  //   path: '/',
+  // }
 ]
 
 const router = createRouter({

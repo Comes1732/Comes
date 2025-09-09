@@ -49,10 +49,10 @@
 
 <script setup>
 // 引入Vue响应式API
-import { ref, reactive } from 'vue'
+import { ref } from 'vue'
 
 // 定义表单数据响应式对象
-const form = reactive({
+const form = ref({
   username: '',
   password: ''
 })
@@ -69,22 +69,56 @@ const handleMouseMove = (e) => {
   // 获取容器位置和尺寸信息
   const { left, top, width, height } = e.currentTarget.getBoundingClientRect()
   // 计算鼠标在容器内的相对位置(-0.5到0.5)
-  const x = (e.clientX - left) /* width - 0.5
-  const y = (e.clientY - top) /* height - 0.5
+  const x = (e.clientX - left) /* width - 0.5 */
+  const y = (e.clientY - top) /* height - 0.5 */
   // 根据鼠标位置设置倾斜角度
-  tiltX.value = y * 10  // 垂直移动影响X轴旋转
-  tiltY.value = x * -10 // 水平移动影响Y轴旋转
+  tiltX.value = y * 0.005 // 垂直移动影响X轴旋转
+  tiltY.value = x * -0.008 // 水平移动影响Y轴旋转
 }
 
 /**
  * 处理表单提交事件
  */
 const handleSubmit = () => {
-  console.log('登录表单:', form)
-  // 这里可以添加实际的登录逻辑
-  // 例如API调用、表单验证等
-}
-}
+    // 表单验证逻辑
+    console.log(form.value.username)
+    console.log(form.value.password)
+    // 1. 重置错误状态
+    if (!form.value.username.trim()) {
+        throw new Error('用户名不能为空')
+      }
+      if (form.value.password.length < 6) {
+        throw new Error('密码长度不能少于6位')
+      }
+
+    // try {
+    //  
+
+      
+    //   // 2. 基础表单验证
+      
+    //   // 3. 发起登录请求
+    //   const { data } = await axios.post('/api/admin/login', {
+    //     username: form.username,
+    //     password: form.password
+    //   })
+
+    //   // 4. 处理登录成功
+    //   localStorage.setItem('token', data.token)
+    //   console.log('登陆成功')
+    //   // router.push('/dashboard')
+      
+    // } catch (error) {
+    //   // 5. 错误处理
+    //   errorMsg.value = error.response?.data?.message || error.message
+    //   console.error('登录失败:', error)
+    // } finally {
+    //   // 6. 重置加载状态
+    //   loading.value = false
+    // }
+   
+  }
+
 </script>
 
 <style scoped>
