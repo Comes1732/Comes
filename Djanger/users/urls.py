@@ -1,9 +1,10 @@
 
 from django.urls import path
-from . import views
+from .views import  RegisterView, LoginView
 
 app_name = 'users'  # 关键设置：与namespace值一致
 
 urlpatterns = [
-    path('profile/', views.UtilTestViews.as_view(), name='profile'),
+    path('register/', RegisterView.as_view(), name='register'),
+    path('login/', LoginView.as_view(), name='login'),
 ]

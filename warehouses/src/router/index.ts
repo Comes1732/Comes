@@ -1,6 +1,7 @@
 
 import { createRouter, createWebHistory } from 'vue-router'
 import LoginView from '@/views/LoginViews.vue'
+import RegisterPage from '@/views/RegisterPage.vue'
 
 const routes = [
   {
@@ -8,11 +9,12 @@ const routes = [
     name: 'Login',
     component: LoginView,
     meta: { requiresAuth: false }  // （未登录用户可访问）
+  },{
+    path: '/Regis',
+    name: 'Regis',
+    component: RegisterPage,
+    meta: { requiresAuth: false }  // （未登录用户可访问）
   }
-  // ,
-  // {
-  //   path: '/',
-  // }
 ]
 
 const router = createRouter({
