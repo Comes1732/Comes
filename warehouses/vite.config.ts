@@ -4,9 +4,9 @@ import { defineConfig } from 'vite'      //重点部分
 import vue from '@vitejs/plugin-vue'
 dns.setDefaultResultOrder('verbatim')    //重点部分
  
-// https://vitejs.dev/config/
+// Vite配置
 export default defineConfig({
-  plugins: [vue()],
+  plugins: [vue()],  // 使用Vue插件
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))

@@ -5,7 +5,6 @@
     <!-- 主容器使用Flexbox布局，添加鼠标移动特效 -->
     <div 
       class="login-container"
-      @mousemove="handleMouseMove"
       :style="{
         transform: `perspective(1000px) rotateX(${tiltY}deg) rotateY(${tiltX}deg)`
       }"
@@ -48,8 +47,12 @@
 </template>
 
 <script setup>
+
 // 引入Vue响应式API
 import { ref } from 'vue'
+
+import router from '../router/index'
+import axios from 'axios'
 
 // 定义表单数据响应式对象
 const form = ref({
@@ -79,45 +82,58 @@ const handleMouseMove = (e) => {
 /**
  * 处理表单提交事件
  */
-const handleSubmit = () => {
-    // 表单验证逻辑
-    console.log(form.value.username)
-    console.log(form.value.password)
-    // 1. 重置错误状态
-    if (!form.value.username.trim()) {
-        throw new Error('用户名不能为空')
-      }
-      if (form.value.password.length < 6) {
-        throw new Error('密码长度不能少于6位')
-      }
 
-    // try {
-    //  
-
-      
-    //   // 2. 基础表单验证
-      
-    //   // 3. 发起登录请求
-    //   const { data } = await axios.post('/api/admin/login', {
-    //     username: form.username,
-    //     password: form.password
-    //   })
-
-    //   // 4. 处理登录成功
-    //   localStorage.setItem('token', data.token)
-    //   console.log('登陆成功')
-    //   // router.push('/dashboard')
-      
-    // } catch (error) {
-    //   // 5. 错误处理
-    //   errorMsg.value = error.response?.data?.message || error.message
-    //   console.error('登录失败:', error)
-    // } finally {
-    //   // 6. 重置加载状态
-    //   loading.value = false
-    // }
-   
+const handleSubmit = async () => {
+  // 1. 表单验证
+  if (!form.value.username.trim()) {
+    throw new Error('用户名不能为空')
   }
+  if (form.value.password.length < 6) {
+    throw new Error('密码长度不能少于6位')
+  }
+
+  try {
+    // 2. 发起登录请求
+    const response = await axios.post('/api/users/login/', {
+      username: form.value.username,
+      password: form.value.password
+    });
+
+    // 3. 处理登录响应
+    const { 
+      user_id,           // 用户ID（工号）
+      username,          // 用户名
+      access: accessToken, // 访问令牌
+      refresh: refreshToken, // 刷新令牌
+      is_staff,         // 是否管理员
+      permissions       // 权限数组
+    } = response.data;
+
+    // 4. 存储用户凭证
+    localStorage.setItem('user_id', user_id);
+    localStorage.setItem('access_token', accessToken);
+    localStorage.setItem('refresh_token', refreshToken);
+
+    // 5. 存储用户信息
+    sessionStorage.setItem('user_info', JSON.stringify({
+      username,
+      is_staff,
+      permissions
+    }));
+    // 5. 路由跳转 - 需要先导入router
+    router.push('/dashboard')
+    
+  } catch (error) {
+    console.error('登录失败:', error)
+    if (error.response) {
+      this.errorMsg = error.response.data.message || '登录失败'
+    } else {
+      this.errorMsg = '网络错误，请重试'
+    }
+  }
+}
+
+
 
 </script>
 
@@ -162,7 +178,7 @@ const handleSubmit = () => {
 
 /* 登录卡片样式 */
 .login-card {
-  background: rgba(255, 255, 255, 0.521); /* 半透明背景 */
+  background: rgba(255, 255, 255, 0.00001); /* 半透明背景 */
   backdrop-filter: blur(10px); /* 毛玻璃效果 */
   padding: 2rem 3rem; /* 内边距 */
   border-radius: 15px; /* 圆角 */

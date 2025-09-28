@@ -38,14 +38,15 @@ class LoginView(APIView):
             if user:
                 print('接口测通')
                 refresh = RefreshToken.for_user(user)
-                return Response({
-                    'user_id': user.id,
+                result = {
+                    'user_id': user.id,   # 用户ID == 工号
                     'username': user.username,
                     'access': str(refresh.access_token),
                     'refresh': str(refresh),
-                    'is_staff': user.is_staff,
-                    'permissions': self.get_user_permissions(user)
-                })
+                    'is_staff': user.is_staff,   # 布尔值标识管理员身份
+                    'permissions': self.get_user_permissions(user)  # 权限数组（示例[*]表示全权限）
+                }
+                return Response(result)
             return Response({'error': 'Invalid credentials'}, status=401)
         return Response(serializer.errors, status=400)
     

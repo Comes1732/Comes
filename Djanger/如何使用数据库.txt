@@ -1,0 +1,5 @@
+由于前后端都要写,本人使用Vscode进行开发  
+
+使用 SQLite Viewer 插件
+直接右键.sqlite文件, 通过 SQLite Viewer 打开即可操作数据库
+不会使用请联系  !*%@$$%!&#@
