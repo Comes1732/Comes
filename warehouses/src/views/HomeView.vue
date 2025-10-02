@@ -1,18 +1,75 @@
 
 <template>
   <el-container class="main-container">
+    <!-- style="height: 120px" -->
     <el-header class="animated-header" style="height: 12%">
       <h1 class="title">智能管理系统</h1>
       <div class="tech-line"></div>
+      <!-- 新增用户信息栏 -->
+      <div class="user-info">
+        <el-avatar :size="40" src="https://picsum.photos/200/300?random=1" />
+        <span class="username">管理员</span>
+        <el-dropdown>
+          <el-icon :size="20"><arrow-down /></el-icon>
+          <template #dropdown>
+            <el-dropdown-menu>
+              <el-dropdown-item>个人中心</el-dropdown-item>
+              <el-dropdown-item>系统设置</el-dropdown-item>
+              <el-dropdown-item divided>退出登录</el-dropdown-item>
+            </el-dropdown-menu>
+          </template>
+        </el-dropdown>
+      </div>
     </el-header>
+
     <el-main class="dashboard-main">
-      <div class="grid-container" >
+      <!-- 新增系统状态卡片 -->
+      <div class="status-cards">
+        <el-card class="status-card" shadow="hover" @click="refreshPercentage">
+          <div class="status-content">
+            <el-icon :size="40" color="#00dbde"><cpu /></el-icon>
+            <div class="status-text">
+              <h3 style="color: white;" >系统开发程度</h3>
+              <el-progress 
+                :percentage="randomPercentage" 
+                :color="customColors"
+                class="progress-bar"
+              />
+              <!-- <el-button  class="refresh-btn">
+                随机刷新
+              </el-button> -->
+            </div>
+          </div>
+        </el-card>
+        
+        <el-card class="status-card" shadow="hover">
+          <div class="status-content">
+            <el-icon :size="40" color="#fc00ff"><data-line /></el-icon>
+            <div class="status-text">
+              <h3 style="color: white;">今日笔记</h3>
+              <p>3项事件</p>
+            </div>
+          </div>
+        </el-card>
+        
+        <el-card class="status-card" shadow="hover">
+          <div class="status-content">
+            <el-icon :size="40" color="#ffd04b"><bell /></el-icon>
+            <div class="status-text">
+              <h3 style="color: white;">待办事项</h3>
+              <p>5 项待处理</p>
+            </div>
+          </div>
+        </el-card>
+      </div>
+
+      <!-- 原有系统卡片 -->
+      <div class="grid-container">
         <el-card 
           v-for="(system, index) in systems" 
           :key="index"
           class="system-card"
-          响应式动态效果
-          :style="`--delay: ${index * 0.1}s`"   
+          :style="`--delay: ${index * 0.1}s`"
           @click="navigateTo(system.path)"
           shadow="hover">
           <div class="card-content">
@@ -25,36 +82,77 @@
           </div>
         </el-card>
       </div>
-      <!-- 下方补充内容 -->
-      <div class="dashboard-footer" style="margin-top: 90px;">
-        <div class="stats-card">
-          <h3>系统运行状态</h3>
-          <p>在线用户:248 人 | 今日访问:1,256 次</p>
-        </div>
-        <div class="quick-links">
-          <h3>快捷操作</h3>
-          <el-button type="text" icon="el-icon-setting">系统设置</el-button>
-          <el-button type="text" icon="el-icon-question">帮助中心</el-button>
-        </div>
-      </div>
 
+      <!-- 日志更新 -->
+      <el-card class="recent-activity" shadow="hover">
+        <template #header>
+          <div class="activity-header">
+            <h3 style="color: white;">更新记录</h3>
+            <el-button type="text">查看全部</el-button>
+          </div>
+        </template>
+        <el-timeline>
+          <el-timeline-item
+            v-for="(activity, index) in activities"
+            :key="index"
+            :timestamp="activity.time">
+            {{ activity.content }}
+          </el-timeline-item>
+        </el-timeline>
+      </el-card>
     </el-main>
   </el-container>
 </template>
 
+<script>
+export default {
+  data() {
+    return {
+      randomPercentage: 0,
+      customColors: [
+        { "color": "#87CEEB", "percentage": 15 },
+        { "color": "#5D8AA8", "percentage": 30 },
+        { "color": "#4682B4", "percentage": 45 },
+        { "color": "#4169E1", "percentage": 60 },
+        { "color": "#9370DB", "percentage": 75 },
+        { "color": "#DA70D6", "percentage": 90 },
+        { "color": "#FF6347", "percentage": 100 }
+      ]
+    }
+  },
+  mounted() {
+    this.generateRandomPercentage();
+  },
+  methods: {
+    generateRandomPercentage() {
+      const percentages = [5, 10, 15, 25, 45, 65, 80, 100];
+      const randomIndex = Math.floor(Math.random() * percentages.length);
+      this.randomPercentage = percentages[randomIndex];
+    },
+    refreshPercentage() {
+      this.generateRandomPercentage();
+    }
+  }
+}
+</script>
+
 <script setup>
-import { markRaw  } from 'vue'   // shallowRef 不会递归转换内部对象，适合组件引用
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import {
   Money,
   Goods,
   Sunny,
-  Connection
+  Connection,
+  ArrowDown,
+  Cpu,
+  DataLine,
+  Bell
 } from '@element-plus/icons-vue'
 
 const router = useRouter()
 
-const systems = markRaw([
+const systems = ref([
   {
     name: '财务管理系统',
     desc: '企业资产数据管理与分析',
@@ -78,172 +176,320 @@ const systems = markRaw([
     desc: 'AI模型部署与监控',
     path: '/ai',
     icon: Connection
+  },
+  {
+    name: '我的工具箱',
+    desc: '工具箱应用及三方工具网站',
+    path: '/ai',
+    icon: Connection
   }
 ])
+
+const activities = ref([
+  {
+    content: '用户张三更新了财务数据',
+    time: '2025-10-02 14:30'
+  },
+  {
+    content: '系统自动备份完成',
+    time: '2025-10-02 12:00'
+  },
+  {
+    content: '新版本1.2.0发布',
+    time: '2025-10-01 09:15'
+  }
+])
+
 
 const navigateTo = (path) => {
   router.push(path)
 }
+
+
 </script>
 
 <style lang="scss" scoped>
-/* 全局容器样式：控制整个页面布局 */
+// 完成度
+.progress-bar {
+  margin: 20px 0;
+  width: 80%;
+}
+.refresh-btn {
+  margin-top: 10px;
+}
+//
+
 .main-container {
-  height: 100vh; /* 页面高度占满屏幕 */
-  background: linear-gradient(135deg, #0f0c29, #302b63, #24243e); /* 背景渐变色（深蓝紫渐变） */
-  color: white; /* 全局文字颜色 */
+  height: 100vh;
+  background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+  color: white;
 }
 
-/* 头部区域样式：页面顶部标题栏 */
 .animated-header {
   display: flex;
-  flex-direction: column; /* 垂直排列子元素（标题+科技线） */
-  align-items: center; /* 子元素水平居中 */
-  justify-content: center; /* 子元素垂直居中 */
-  background: rgba(0, 0, 0, 0.2); /* 半透明黑色背景 */
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1); /* 底部白色边框（透明度10%） */
-  animation: fadeInDown 0.8s ease-out; /* 头部入场动画（从上往下淡入） */
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.2);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  animation: fadeInDown 0.8s ease-out;
+  position: relative;
+  margin-top: -28px; /* 根据需求调整负值 */
 
   .title {
-    font-size: 2.5rem; /* 标题文字大小 */
-    background: linear-gradient(to right, #00dbde, #fc00ff); /* 标题文字渐变色（蓝紫渐变） */
-    -webkit-background-clip: text; /* 文字背景裁剪（仅文字显示渐变） */
+    font-size: 2.5rem;
+    background: linear-gradient(to right, #00dbde, #fc00ff);
+    -webkit-background-clip: text;
     background-clip: text;
-    color: transparent; /* 文字透明，显示渐变背景 */
-    margin-bottom: 10px; /* 标题下方间距 */
+    color: transparent;
+    margin-bottom: 10px;
   }
 
   .tech-line {
-    width: 80%; /* 科技线宽度（占头部80%） */
-    height: 2px; /* 科技线高度 */
-    background: linear-gradient(to right, transparent, #00dbde, transparent); /* 科技线渐变色（中间亮蓝，两侧透明） */
-    box-shadow: 0 0 10px #00dbde; /* 科技线发光效果（蓝色光晕） */
+    width: 80%;
+    height: 3px;
+    background: linear-gradient(to right, transparent, #00dbde, transparent);
+    box-shadow: 0 0 10px #00dbde;
+  }
+
+  .user-info {
+    position: absolute;
+    right: 30px;
+    top: 60%;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+
+    .username {
+      font-size: 1rem;
+    }
   }
 }
 
-/* 主内容区域样式：卡片和补充内容的容器 */
 .dashboard-main {
-  padding: 2rem; /* 内边距（上下左右2rem） */
+  display: flex;
+  flex-direction: column;
 }
 
-/* 卡片网格容器：控制4个系统卡片的布局 */
+.status-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+
+  .status-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+
+    &:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .status-content {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1.5rem;
+
+      .status-text {
+        flex: 1;
+
+        h3 {
+          margin: 0 0 0.5rem 0;
+          font-size: 1.1rem;
+        }
+
+        p {
+          margin: 0;
+          color: rgba(255, 255, 255, 0.7);
+          font-size: 0.9rem;
+        }
+
+        :deep(.el-progress) {
+          margin-top: 0.5rem;
+        }
+      }
+    }
+  }
+}
+
 .grid-container {
-  display: grid; /* 启用网格布局 */
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* 自适应列数（最小宽度300px，自动换行） */
-  gap: 2rem; /* 卡片之间的间距（水平和垂直） */
-  padding: 1rem; /* 网格容器内边距 */
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  padding: 1rem;
 }
 
-/* 系统卡片样式：单个卡片的基础样式 */
 .system-card {
-  background: rgba(255, 255, 255, 0.05); /* 卡片背景（白色透明度5%） */
-  border: 1px solid rgba(255, 255, 255, 0.1); /* 卡片边框（白色透明度10%） */
-  border-radius: 15px; /* 卡片圆角 */
-  backdrop-filter: blur(10px); /* 背景模糊效果（毛玻璃效果） */
-  cursor: pointer; /* 鼠标悬停时显示手型指针 */
-  transition: all 0.3s ease; /* 所有属性变化动画（0.3秒缓动） */
-  transform: translateY(20px); /* 初始位置（向下偏移20px，用于入场动画） */
-  opacity: 0; /* 初始透明度0（用于入场动画） */
-  animation: fadeInUp 0.5s ease-out forwards; /* 卡片入场动画（从下往上淡入） */
-  animation-delay: var(--delay); /* 动画延迟时间（通过CSS变量动态设置，每个卡片依次入场） */
-  position: relative; /* 相对定位（用于子元素绝对定位） */
-  overflow: hidden; /* 隐藏溢出内容（如发光效果） */
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+  backdrop-filter: blur(10px);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  transform: translateY(20px);
+  opacity: 0;
+  animation: fadeInUp 0.5s ease-out forwards;
+  animation-delay: var(--delay);
+  position: relative;
+  overflow: hidden;
 
-  /* 卡片悬停效果 */
   &:hover {
-    transform: translateY(-5px); /* 悬停时向上移动5px */
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3); /* 悬停时阴影（黑色透明度30%） */
-    background: rgba(255, 255, 255, 0.1); /* 悬停时背景透明度提升至10% */
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+    background: rgba(255, 255, 255, 0.1);
 
     .glow-effect {
-      opacity: 1; /* 悬停时显示发光效果 */
+      opacity: 1;
     }
   }
 
   .card-content {
-    padding: 2rem; /* 卡片内边距 */
-    text-align: center; /* 卡片内容居中对齐 */
-    position: relative; /* 相对定位（z-index生效） */
-    z-index: 2; /* 内容层级高于发光效果（避免被遮挡） */
+    padding: 2rem;
+    text-align: center;
+    position: relative;
+    z-index: 2;
 
     h3 {
-      font-size: 1.5rem; /* 系统名称文字大小 */
-      margin: 1rem 0; /* 上下间距1rem */
-      color: white; /* 系统名称文字颜色 */
+      font-size: 1.5rem;
+      margin: 1rem 0;
+      color: white;
     }
 
     p {
-      color: rgba(255, 255, 255, 0.7); /* 系统描述文字颜色（白色透明度70%） */
+      color: rgba(255, 255, 255, 0.7);
     }
   }
 
   .icon-wrapper {
-    width: 80px; /* 图标容器宽度 */
-    height: 80px; /* 图标容器高度 */
-    margin: 0 auto; /* 水平居中 */
+    width: 80px;
+    height: 80px;
+    margin: 0 auto;
     display: flex;
-    align-items: center; /* 图标垂直居中 */
-    justify-content: center; /* 图标水平居中 */
-    background: rgba(255, 255, 255, 0.1); /* 图标背景（白色透明度10%） */
-    border-radius: 50%; /* 圆形图标容器 */
-    border: 1px solid rgba(255, 255, 255, 0.2); /* 图标容器边框（白色透明度20%） */
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.2);
 
     .system-icon {
-      font-size: 2.5rem; /* 图标大小 */
-      color: white; /* 图标颜色 */
+      font-size: 2.5rem;
+      color: white;
     }
   }
 
   .glow-effect {
-    position: absolute; /* 绝对定位（相对于卡片） */
+    position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: radial-gradient(circle at center, rgba(0, 219, 222, 0.2) 0%, transparent 70%); /* 中心发光效果（淡蓝色，向外透明） */
-    opacity: 0; /* 默认隐藏发光效果 */
-    transition: opacity 0.3s ease; /* 发光效果显示/隐藏动画 */
+    background: radial-gradient(circle at center, rgba(0, 219, 222, 0.2) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
   }
 }
 
-/* 新增：补充内容区域样式（卡片下方的统计和快捷操作） */
-.dashboard-footer {
-  display: flex; /* 水平排列子元素（统计卡片+快捷操作） */
-  justify-content: space-around; /* 子元素均匀分布（左右留空） */
-  margin-top: 30px; /* 与上方卡片的间距 */
-  padding: 20px; /* 内边距 */
-  background: rgba(255, 255, 255, 0.05); /* 半透明背景（同卡片背景） */
-  border-radius: 8px; /* 圆角边框 */
+
+.recent-activity {
+  margin-top: 2rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+  backdrop-filter: blur(10px);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  transform: translateY(0);
+  opacity: 0;
+  animation: cardEntrance 0.8s forwards;
+
+  &:hover {
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+
+  .activity-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.3s ease;
+    
+    &:hover {
+      transform: translateX(5px);
+    }
+  }
+
+  :deep(.el-timeline) {
+    padding-left: 10px;
+    transition: transform 0.3s ease;
+
+    .el-timeline-item {
+      opacity: 0;
+      animation: itemFadeIn 0.6s forwards;
+      animation-delay: calc(0.1s * var(--index));
+      
+      &:hover {
+        .el-timeline-item__timestamp {
+          color: rgba(255, 255, 255, 0.9);
+        }
+      }
+    }
+
+    .el-timeline-item__timestamp {
+      color: rgba(255, 255, 255, 0.7);
+      transition: color 0.3s ease, transform 0.3s ease;
+    }
+  }
 }
 
-/* 统计卡片样式：左侧系统状态区域 */
-.stats-card, .quick-links {
-  padding: 15px; /* 内边距 */
-  min-width: 200px; /* 最小宽度（避免内容过窄） */
+@keyframes cardEntrance {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
-/* 动画定义：卡片入场动画（从下往上淡入） */
+@keyframes itemFadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+
 @keyframes fadeInUp {
   from {
-    opacity: 0; /* 起始状态：完全透明 */
-    transform: translateY(20px); /* 起始位置：向下偏移20px */
+    opacity: 0;
+    transform: translateY(20px);
   }
   to {
-    opacity: 1; /* 结束状态：完全不透明 */
-    transform: translateY(0); /* 结束位置：回到正常位置 */
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
-/* 动画定义：头部入场动画（从上往下淡入） */
 @keyframes fadeInDown {
   from {
-    opacity: 0; /* 起始状态：完全透明 */
-    transform: translateY(-20px); /* 起始位置：向上偏移20px */
+    opacity: 0;
+    transform: translateY(-20px);
   }
   to {
-    opacity: 1; /* 结束状态：完全不透明 */
-    transform: translateY(0); /* 结束位置：回到正常位置 */
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 </style>
-

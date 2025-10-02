@@ -18,6 +18,7 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "@heroicons/vue": "2.0",
     "cors": "^2.8.5",
     "element-plus": "^2.11.2",
     "pinia": "^3.0.3",

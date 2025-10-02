@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '@/views/HomeView.vue'
 import LoginView from '@/views/LoginViews.vue'
 import RegisterPage from '@/views/RegisterPage.vue'
+import warehouse from '@/views/ware/warehouse.vue'
 import WelcomeItem from '@/components/WelcomeItem.vue'
 
 const routes = [
@@ -21,12 +22,13 @@ const routes = [
     component: RegisterPage,
     meta: { guestOnly: true }  
   },{ 
-    path: '/Welcome',
-    name: 'Welcome',
-    component: WelcomeItem,  // 大屏展示
+    path: '/warehouse',
+    name: 'warehouse',
+    component: warehouse,  // 仓库页面
     meta: { requiresAuth: true } 
   },
 ]
+
 
 const router = createRouter({
   history: createWebHistory(),
