@@ -112,6 +112,7 @@ const handleSubmit = async () => {
     // 4. 存储用户凭证
     localStorage.setItem('user_id', user_id);
     localStorage.setItem('access_token', accessToken);
+    localStorage.setItem('authToken', accessToken);
     localStorage.setItem('refresh_token', refreshToken);
 
     // 5. 存储用户信息
@@ -121,8 +122,7 @@ const handleSubmit = async () => {
       permissions
     }));
     // 5. 路由跳转 - 需要先导入router
-    router.push('/dashboard')
-    
+    router.push('/')
   } catch (error) {
     console.error('登录失败:', error)
     if (error.response) {

@@ -36,7 +36,6 @@ class LoginView(APIView):
                 password=serializer.validated_data['password']
             )
             if user:
-                print('接口测通')
                 refresh = RefreshToken.for_user(user)
                 result = {
                     'user_id': user.id,   # 用户ID == 工号

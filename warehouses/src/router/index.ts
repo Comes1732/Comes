@@ -6,25 +6,25 @@ import WelcomeItem from '@/components/WelcomeItem.vue'
 
 const routes = [
   {       
-    path: '/dashboard',
+    path: '/',
     name: 'Home',
     component: HomeView,   // 首页
-    meta: { requiresAuth: true }  
+    meta: { requiresAuth: true }   // 需要登录--默认权限
   },{ 
     path: '/Login',
     name: 'Login',
     component: LoginView,  // 登录
-    meta: { requiresAuth: false }  
+    meta: { guestOnly: true }  // 仅未登录可访问
   },{  
     path: '/Regis',
     name: 'Regis',        // 注册
     component: RegisterPage,
-    meta: { requiresAuth: false }  
+    meta: { guestOnly: true }  
   },{ 
     path: '/Welcome',
     name: 'Welcome',
     component: WelcomeItem,  // 大屏展示
-    meta: { requiresAuth: true }
+    meta: { requiresAuth: true } 
   },
 ]
 
@@ -33,37 +33,25 @@ const router = createRouter({
   routes
 })
 
+// 全局前置守卫
 router.beforeEach((to, from, next) => {
-  const isAuthenticated = !!localStorage.getItem('token')
+  const isAuthenticated = localStorage.getItem('authToken')
   
-  // 检查路由是否需要认证
+  // 需要登录但未认证
   if (to.meta.requiresAuth && !isAuthenticated) {
-    next('/Login')
+    next({
+      path: '/login',
+      query: { redirect: to.fullPath } // 携带原路径
+    })
   } 
-  // 检查路由是否需要游客状态（未登录）
-  else if (to.meta.requiresGuest && isAuthenticated) {
-    next('/')
+  // 已登录但访问guestOnly页面
+  else if (to.meta.guestOnly && isAuthenticated) {
+    next(from.path || '/dashboard') // 返回原页面或默认页
   }
-  // 其他情况正常放行
+  // 正常放行
   else {
     next()
   }
 })
-
-// router.beforeEach((to, from, next) => {
-//   const requiresAuth = to.matched.some(record => record.meta.requiresAuth) // 验证是否存在权限
-//   const isAuthenticated = !!localStorage.getItem('token') //  验证是否存在token
-//   console.log(requiresAuth, isAuthenticated)
-
-//   // isAuthenticated == false or requiresAuth == false
-//   if (requiresAuth && isAuthenticated) {
-//     next('/')  // 其他情况正常放行
-//   }
-//   else {
-//     console.log('/login')
-//     next('/Login')  // 需要认证但未登录
-//   }
-// })
-
 
 export default router
