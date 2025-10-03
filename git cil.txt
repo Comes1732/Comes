@@ -1,0 +1,8 @@
+# warning: in the working copy of 'warehouses/src/components/icons/ToolBoxNavbar.vue', CRLF will be replaced by LF the next time Git touches it
+# warning: in the working copy of 'warehouses/src/views/index/index.vue', CRLF will be replaced by LF the next time Git touches it
+
+# 使用关闭转义字符命令
+git config --global core.autocrlf false
+
+# 一键执行命令
+

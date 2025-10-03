@@ -2,8 +2,6 @@ import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '@/views/HomeView.vue'
 import LoginView from '@/views/LoginViews.vue'
 import RegisterPage from '@/views/RegisterPage.vue'
-import warehouse from '@/views/ware/warehouse.vue'
-import WelcomeItem from '@/components/WelcomeItem.vue'
 
 const routes = [
   {       
@@ -21,12 +19,12 @@ const routes = [
     name: 'Regis',        // 注册
     component: RegisterPage,
     meta: { guestOnly: true }  
-  },{ 
-    path: '/warehouse',
-    name: 'warehouse',
-    component: warehouse,  // 仓库页面
-    meta: { requiresAuth: true } 
-  },
+  },{
+    path: '/index/:toolName',
+    name: 'DynamicTool', // 动态路由名称
+    component: () => import('@/views/index/index.vue'),
+    meta: { requiresAuth: true } // 默认认证要求
+  }
 ]
 
 

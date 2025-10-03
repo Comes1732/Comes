@@ -65,23 +65,28 @@
 
       <!-- 原有系统卡片 -->
       <div class="grid-container">
+        <!-- <el-icon><Grid /></el-icon> -->
         <el-card 
           v-for="(system, index) in systems" 
           :key="index"
           class="system-card"
           :style="`--delay: ${index * 0.1}s`"
-          @click="navigateTo(system.path)"
+          @click="navigateTo({path: '/index'+ system.path})"
           shadow="hover">
           <div class="card-content">
             <div class="icon-wrapper">
-              <component :is="system.icon" class="system-icon"></component>
+              <el-icon class="system-icon">
+                <component :is="system.icon" />
+              </el-icon>
             </div>
             <h3>{{ system.name }}</h3>
             <p>{{ system.desc }}</p>
-            <div class="glow-effect"></div>
+            <!-- 光影特效 -->
+            <div class="glow-effect"></div>  
           </div>
         </el-card>
       </div>
+
 
       <!-- 日志更新 -->
       <el-card class="recent-activity" shadow="hover">
@@ -137,13 +142,14 @@ export default {
 </script>
 
 <script setup>
-import { ref } from 'vue'
+import { markRaw } from 'vue'
 import { useRouter } from 'vue-router'
 import {
   Money,
   Goods,
   Sunny,
   Connection,
+  Grid,
   ArrowDown,
   Cpu,
   DataLine,
@@ -152,7 +158,7 @@ import {
 
 const router = useRouter()
 
-const systems = ref([
+const systems = markRaw([
   {
     name: '财务管理系统',
     desc: '企业资产数据管理与分析',
@@ -180,12 +186,12 @@ const systems = ref([
   {
     name: '我的工具箱',
     desc: '工具箱应用及三方工具网站',
-    path: '/ai',
-    icon: Connection
+    path: '/ToolBoxApp',
+    icon: Grid
   }
 ])
 
-const activities = ref([
+const activities = markRaw([
   {
     content: '用户张三更新了财务数据',
     time: '2025-10-02 14:30'
@@ -203,6 +209,7 @@ const activities = ref([
 
 const navigateTo = (path) => {
   router.push(path)
+  console.log(path)
 }
 
 
